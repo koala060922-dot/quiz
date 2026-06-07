@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 복습 퀴즈 앱</title>
+    <style>
+        body {
+            font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 1.2rem;
+            color: #34495e;
+            margin-bottom: 20px;
+            word-break: keep-all;
+        }
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .choice-btn {
+            background-color: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .choice-btn:hover {
+            background-color: #d5dbdb;
+        }
+        .choice-btn.correct {
+            background-color: #2ecc71;
+            border-color: #27ae60;
+            color: white;
+        }
+        .choice-btn.wrong {
+            background-color: #e74c3c;
+            border-color: #c0392b;
+            color: white;
+        }
+        .choice-btn:disabled {
+            cursor: not-allowed;
+        }
+        #next-btn, #restart-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            margin-top: 20px;
+            cursor: pointer;
+            display: none;
+        }
+        #next-btn:hover, #restart-btn:hover {
+            background-color: #2980b9;
+        }
+        .hide {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>📚 복습 퀴즈</h1>
+    
+    <div id="quiz-area">
+        <h2 id="question">질문이 여기에 표시됩니다.</h2>
+        <div id="choices" class="choices">
+            </div>
+        <button id="next-btn" onclick="nextQuestion()">다음 문제</button>
+    </div>
+
+    <div id="result-area" class="hide">
+        <h2>퀴즈 완료! 🎉</h2>
+        <p id="score-text"></p>
+        <button id="restart-btn" onclick="restartQuiz()" style="display: inline-block;">다시 풀기</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            question: "자바(Java)에서 정수형 데이터를 저장할 때 사용하는 가장 기본적인 자료형은 무엇일까요?",
+            choices: ["double", "int", "String", "boolean"],
+            correct: "int"
+        },
+        {
+            question: "다음 중 자바의 반복문 제어문이 아닌 것은 무엇일까요?",
+            choices: ["for", "while", "do-while", "if"],
+            correct: "if"
+        },
+        {
+            question: "객체 지향 프로그래밍에서 클래스의 새로운 인스턴스(객체)를 생성할 때 사용하는 키워드는 무엇일까요?",
+            choices: ["new", "class", "void", "static"],
+            correct: "new"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById("question");
+    const choicesEl = document.getElementById("choices");
+    const nextBtn = document.getElementById("next-btn");
+    const quizArea = document.getElementById("quiz-area");
+    const resultArea = document.getElementById("result-area");
+    const scoreText = document.getElementById("score-text");
+
+    function loadQuestion() {
+        choicesEl.innerHTML = "";
+        nextBtn.style.display = "none";
+
+        const currentQuiz = quizData[currentQuestionIndex];
+        questionEl.innerText = `Q${currentQuestionIndex + 1}. ${currentQuiz.question}`;
+
+        currentQuiz.choices.forEach(choice => {
+            const button = document.createElement("button");
+            button.innerText = choice;
+            button.classList.add("choice-btn");
+            button.onclick = () => selectAnswer(button, choice, currentQuiz.correct);
+            choicesEl.appendChild(button);
+        });
+    }
+
+    function selectAnswer(selectedButton, selectedChoice, correctAnswer) {
+        const allButtons = choicesEl.querySelectorAll(".choice-btn");
+        
+        allButtons.forEach(btn => btn.disabled = true);
+
+        if (selectedChoice === correctAnswer) {
+            selectedButton.classList.add("correct");
+            score++;
+        } else {
+            selectedButton.classList.add("wrong");
+            allButtons.forEach(btn => {
+                if (btn.innerText === correctAnswer) {
+                    btn.classList.add("correct");
+                }
+            });
+        }
+
+        if (currentQuestionIndex === quizData.length - 1) {
+            nextBtn.innerText = "결과 보기";
+        }
+        nextBtn.style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        quizArea.classList.add("hide");
+        resultArea.classList.remove("hide");
+        scoreText.innerHTML = `총 <strong>${quizData.length}</strong>문제 중 <strong>${score}</strong>문제를 맞혔습니다!`;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        quizArea.classList.remove("hide");
+        resultArea.classList.add("hide");
+        nextBtn.innerText = "다음 문제";
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
