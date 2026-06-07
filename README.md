@@ -6,7 +6,7 @@ HTML, CSS, Vanilla JavaScript를 활용하여 만든 간단하고 직관적인 *
 ## 🌐 라이브 데모 (Live Demo)
 
 아래 링크를 클릭하면 별도의 설치 없이 브라우저에서 바로 퀴즈를 풀어볼 수 있습니다.
-👉 [나만의 복습 퀴즈 앱 바로가기](https://내-깃허브-아이디.github.io/저장소-이름/)
+👉 [나만의 복습 퀴즈 앱 바로가기](https://koala060922-dot.github.io/quiz/quiz.html)
 
 ## 💡 주요 기능
 
